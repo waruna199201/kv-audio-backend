@@ -1,6 +1,6 @@
 import product  from "../models/product.js";
 
-export function addProduct(req,res){
+export async function addProduct(req,res){
     console.log(req.user)
 
     if(req.user == null){
@@ -14,14 +14,19 @@ export function addProduct(req,res){
         res.status(403).json({
             message : "You are not authorized to perform this action"
         })
+        return;
     }
+
     const data = req.body;
     const newProduct = new product(data);
-    newProduct.save()
-    .then(()=>{
-        res.json({message : "Product added successfully"});
+    try{
+    await newProduct.save();
+    res.json({
+        message : "Product registered successfully"
     })
-    .catch((error)=>{
-        res.status(500).json({error : "Product addition failed"});
-    });
+}catch(error){
+        res.status(500).json({
+            error : "Product addition failed"
+        })
+    }
 }
