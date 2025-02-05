@@ -1,4 +1,5 @@
 import product  from "../models/product.js";
+import { isItAdmin } from "./userController.js";
 
 export async function addProduct(req,res){
     console.log(req.user)
@@ -14,8 +15,9 @@ export async function addProduct(req,res){
         res.status(403).json({
             message : "You are not authorized to perform this action"
         })
-        return;
+        return
     }
+
 
     const data = req.body;
     const newProduct = new product(data);
@@ -26,7 +28,30 @@ export async function addProduct(req,res){
     })
 }catch(error){
         res.status(500).json({
-            error : "Product addition failed"
+            error : "Product registation failed"
         })
     }
 }
+
+export async function getProducts(req,res){
+
+    try{
+        if(isItAdmin(req)){
+            const products = await product.find();
+            res.json(products);
+            return;
+        }else{
+            const products = await product.find
+            ({availability:true});
+            res.json(products);
+            return;
+        }
+
+    }catch(error){
+        res.status(500).json({
+            error : error.message
+        })
+
+    }
+}
+
