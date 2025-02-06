@@ -42,16 +42,67 @@ export async function getProducts(req,res){
             return;
         }else{
             const products = await product.find
-            ({availability:true});
+            ({avalibility: true});
             res.json(products);
             return;
         }
 
-    }catch(error){
+    }catch(e){
         res.status(500).json({
-            error : error.message
+            message : "Failed to get products"
         })
 
     }
 }
 
+export async function updateProduct(req,res){
+    try{
+        if(isItAdmin(req)){
+
+            const key = req.params.key;
+
+            const data = req.body
+
+            await product.updateOne({key:key},data)
+
+            res.json({
+                message : "Product update successfully"
+            })
+            return;
+        }else{
+            res.status(403).json({
+                message : "You are not authorized to perform this action"
+
+            })
+        }
+        
+    }catch(e){
+        res.status(500).json({
+            message : "Failed to update product"
+        })
+        
+    }
+}
+
+export async function deleteProduct(req,res) {
+    try{
+        if(isItAdmin(req)){
+            const key = req.params.key;
+            await product.deleteOne({key:key})
+            res.json({
+                message : "Product delete successfully"
+            })
+        }else{
+            res.statos(403).json({
+                message : "You are not authorized to perform this action"
+            })
+            return;
+        }
+
+    }catch(e){
+        res.status(500).json({
+            message : "failed to delete product"
+        })
+    }
+    
+}
